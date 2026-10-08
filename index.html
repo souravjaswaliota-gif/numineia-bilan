@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bilan nutritionnel · Numineia</title>
+<meta name="robots" content="noindex">
+<style>html{color-scheme:light}body{margin:0;font-family:system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap">
+<style>
+/* Layout: a phone device frame on desktop, full-bleed on mobile. One screen at a time, slide transitions, result page scrolls inside the device.
+   Palette from numineia.com: deep teal #18494F, sage #BBDABB, sand #D5C8B8, mint #EBF4EB, logo off-white #E3E1DC, DM Sans. One committed look: dark teal ground, light card. */
+:root{
+  --teal:#18494F; --teal-deep:#0E2F34; --sage:#BBDABB; --sand:#D5C8B8; --mint:#EBF4EB; --bone:#E3E1DC;
+  --bg:#0E2F34; --bg2:#18494F;
+  --card:#F7F5F1; --card-2:#FFFFFF;
+  --fg:#15262A; --muted:#5E6E6B; --line:#DDD9D0;
+  --accent:#18494F; --accent-2:#2F6F6A; --accent-soft:#E6EFE4; --accent-fg:#F7F5F1;
+  --on-dark:#E3E1DC; --on-dark-muted:rgba(227,225,220,.7);
+  --p-O:#18494F; --p-I:#8A6A3F; --p-D:#4C7A5A; --p-C:#8F4F4A;
+  --grad:linear-gradient(160deg,#18494F 0%,#2F6F6A 45%,#BBDABB 100%);
+  --shadow:0 40px 80px -30px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.06);
+  --display:'DM Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --body:'DM Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);background-image:radial-gradient(90% 60% at 50% -10%,rgba(187,218,187,.35),transparent 60%),radial-gradient(60% 50% at 100% 100%,rgba(213,200,184,.18),transparent 60%),linear-gradient(180deg,var(--bg2),var(--bg) 70%);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.5;padding-inline:16px;padding-block:14px 28px}
+.stage{max-width:1040px;margin:0 auto;display:grid;grid-template-columns:1fr;gap:20px;align-items:start}
+@media (min-width:860px){.stage{grid-template-columns:300px 420px;justify-content:center;gap:48px;padding-top:24px}}
+
+/* side panel */
+.side{display:flex;flex-direction:column;gap:16px;order:2}
+@media (min-width:860px){.side{order:1;position:sticky;top:24px}}
+.side .logo{height:22px;width:auto;color:var(--on-dark);display:block}
+.side h1{font-family:var(--display);font-weight:300;font-size:30px;line-height:1.1;margin:0;letter-spacing:-.02em;text-wrap:balance;color:var(--on-dark)}
+.side p{margin:0;color:var(--on-dark-muted);font-size:14px}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chip{border:1px solid rgba(227,225,220,.25);background:transparent;color:var(--on-dark-muted);border-radius:999px;padding:6px 12px;font:inherit;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s}
+.chip:hover{border-color:var(--sage);color:var(--on-dark)}
+.chip[aria-pressed="true"]{background:var(--sage);color:var(--teal-deep);border-color:var(--sage)}
+.chip:focus-visible,.opt:focus-visible,.btn:focus-visible,input:focus-visible,.jump:focus-visible{outline:2px solid var(--sage);outline-offset:2px}
+.steps{display:flex;flex-direction:column;gap:2px;font-size:13px}
+.jump{display:flex;align-items:center;gap:10px;background:transparent;border:0;color:var(--on-dark-muted);font:inherit;font-size:13px;padding:6px 8px;border-radius:8px;cursor:pointer;text-align:left}
+.jump:hover{background:rgba(227,225,220,.08)}
+.jump i{width:8px;height:8px;border-radius:50%;background:rgba(227,225,220,.25);flex:none}
+.jump[aria-current="step"]{color:var(--on-dark);font-weight:600}
+.jump[aria-current="step"] i{background:var(--sage);box-shadow:0 0 0 4px rgba(187,218,187,.25)}
+.jump.done i{background:var(--sage);opacity:.6}
+.events{border:1px dashed rgba(227,225,220,.25);border-radius:14px;padding:12px 14px;font-size:12px;color:var(--on-dark-muted);background:rgba(0,0,0,.15)}
+.events summary{cursor:pointer;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.events ul{margin:8px 0 0;padding-left:16px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;display:flex;flex-direction:column;gap:2px;max-height:160px;overflow:auto}
+
+/* device */
+.device{order:1;background:var(--card);border-radius:28px;box-shadow:var(--shadow);overflow:hidden;position:relative;display:flex;flex-direction:column;height:min(760px,calc(100dvh - 60px));min-height:560px}
+@media (min-width:860px){.device{order:2;height:780px;border-radius:40px;border:8px solid #0B2327}}
+.notch{display:none}
+@media (min-width:860px){.notch{display:block;position:absolute;top:10px;left:50%;transform:translateX(-50%);width:110px;height:26px;background:#0B2327;border-radius:999px;z-index:3}}
+.head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:18px 22px 0}
+@media (min-width:860px){.head{padding-top:46px}}
+.head .logo{height:16px;width:auto;color:var(--teal);display:block}
+.head small{font-size:10px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;font-weight:600}
+.avatar{width:38px;height:38px;border-radius:50%;background:var(--grad);color:var(--bone);display:grid;place-items:center;font-family:var(--display);font-weight:600;flex:none}
+.progress{display:flex;gap:5px;margin:16px 22px 0}
+.progress i{flex:1;height:5px;border-radius:3px;background:var(--line);overflow:hidden;position:relative}
+.progress i::after{content:"";position:absolute;inset:0;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .4s cubic-bezier(.2,.8,.2,1)}
+.progress i.done::after{transform:scaleX(1)}
+.progress i.cur::after{transform:scaleX(.5);background:var(--accent-2)}
+
+.viewport{flex:1;position:relative;overflow:hidden}
+.screen{position:absolute;inset:0;overflow:auto;padding:22px 22px 26px;display:flex;flex-direction:column;gap:18px;animation:slideIn .38s cubic-bezier(.2,.8,.2,1)}
+.screen.leaving{animation:slideOut .28s ease forwards;pointer-events:none}
+@keyframes slideIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:none}}
+@keyframes slideOut{to{opacity:0;transform:translateX(-30px)}}
+@media (prefers-reduced-motion:reduce){.screen,.screen.leaving{animation:none}.opt,.result>*{animation:none!important}.progress i::after{transition:none}}
+
+.eyebrow{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
+h2{font-family:var(--display);font-weight:400;line-height:1.12;margin:0;text-wrap:balance;letter-spacing:-.02em;font-size:27px}
+h2.big{font-size:34px;font-weight:300}
+p{margin:0}
+.muted{color:var(--muted)}
+.spacer{flex:1}
+.fine{font-size:13px;color:var(--muted)}
+
+/* intro art: the site's ellipse glow */
+.art{position:relative;height:160px;border-radius:18px;background:var(--teal);background-image:radial-gradient(70% 90% at 70% 110%,rgba(187,218,187,.9),rgba(187,218,187,0) 60%),radial-gradient(50% 60% at 10% 0%,rgba(213,200,184,.35),transparent 60%);overflow:hidden;flex:none}
+.art span{position:absolute;border-radius:50%;border:1px solid rgba(235,244,235,.35);animation:float 7s ease-in-out infinite}
+.art span:nth-child(1){width:220px;height:220px;right:-60px;top:-110px}
+.art span:nth-child(2){width:140px;height:140px;right:20px;top:-50px;animation-delay:-3s}
+.art span:nth-child(3){width:60px;height:60px;left:28px;top:22px;background:rgba(187,218,187,.25);border:0;animation-delay:-5s}
+.art b{position:absolute;left:18px;bottom:16px;color:var(--bone);font-family:var(--display);font-weight:300;font-size:24px;line-height:1.1;letter-spacing:-.02em}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.pills{display:flex;gap:8px;flex-wrap:wrap}
+.pill{font-size:12px;font-weight:600;padding:6px 10px;border-radius:999px;background:var(--accent-soft);color:var(--teal)}
+.trust{display:flex;gap:10px;align-items:center;border-top:1px solid var(--line);padding-top:14px;font-size:13px;color:var(--muted)}
+.trust .avatar{width:32px;height:32px;font-size:14px}
+
+/* options */
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--card-2);border:1.5px solid var(--line);border-radius:16px;padding:14px 16px;font:inherit;font-weight:500;color:var(--fg);cursor:pointer;transition:border-color .15s,background .15s,transform .12s;animation:rise .4s both;animation-delay:calc(var(--i)*60ms)}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.opt:hover{border-color:var(--accent);transform:translateY(-1px)}
+.opt:active{transform:scale(.985)}
+.opt[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.opt .k{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;flex:none;position:relative;transition:all .15s;color:var(--accent-fg)}
+.opt .k svg{width:14px;height:14px;opacity:0;transform:scale(.4);transition:all .18s}
+.opt[aria-pressed="true"] .k{background:var(--accent);border-color:var(--accent)}
+.opt[aria-pressed="true"] .k svg{opacity:1;transform:scale(1)}
+.btn{appearance:none;border:0;border-radius:999px;background:var(--accent);color:var(--accent-fg);font:inherit;font-weight:600;font-size:16px;padding:15px 22px;cursor:pointer;width:100%;transition:transform .12s,filter .15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn:hover{filter:brightness(1.12)}
+.btn:active{transform:scale(.98)}
+.btn.ghost{background:transparent;color:var(--accent);border:1.5px solid var(--accent)}
+.btn[disabled]{opacity:.4;cursor:default;transform:none}
+.btn svg{width:18px;height:18px}
+
+.why{background:var(--teal);color:var(--bone);border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:8px;position:relative;overflow:hidden;background-image:radial-gradient(60% 80% at 100% 120%,rgba(187,218,187,.6),transparent 60%)}
+.why::before{content:"?";position:absolute;right:-4px;top:-34px;font-family:var(--display);font-size:150px;font-weight:300;color:var(--sage);opacity:.18;line-height:1}
+.why b{color:var(--sage);font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:600}
+.why p{font-size:19px;line-height:1.4;font-weight:300;position:relative}
+
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:13px;font-weight:600}
+.field input{font:inherit;padding:13px 14px;border:1.5px solid var(--line);border-radius:14px;background:var(--card-2);color:var(--fg);width:100%;transition:border-color .15s}
+.field input:focus{border-color:var(--accent)}
+.lock{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.lock svg{width:16px;height:16px}
+
+/* loading */
+.loader{display:flex;flex-direction:column;align-items:stretch;justify-content:center;gap:22px;flex:1}
+.orb{width:84px;height:84px;border-radius:50%;margin:0 auto;background:conic-gradient(from 0deg,var(--teal),var(--accent-2),var(--sage),var(--sand),var(--teal));animation:spin 1.6s linear infinite;position:relative}
+.orb::after{content:"";position:absolute;inset:8px;border-radius:50%;background:var(--card)}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.orb{animation:none}}
+.checks{display:flex;flex-direction:column;gap:10px}
+.check{display:flex;align-items:center;gap:10px;font-size:15px;color:var(--muted);opacity:.35;transition:opacity .3s}
+.check.on{opacity:1;color:var(--fg)}
+.check i{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;flex:none;transition:all .2s;color:var(--accent-fg)}
+.check.on i{background:var(--accent);border-color:var(--accent)}
+.check i svg{width:12px;height:12px;opacity:0}
+.check.on i svg{opacity:1}
+.proof{text-align:center;font-size:13px;color:var(--muted);font-style:italic}
+
+/* result */
+.result{display:flex;flex-direction:column;gap:20px;--pc:var(--accent)}
+.result>*{animation:rise .5s both;animation-delay:calc(var(--i)*90ms)}
+.hero{border-radius:22px;padding:24px 22px;background:var(--pc);background-image:radial-gradient(70% 90% at 85% 115%,rgba(187,218,187,.85),rgba(187,218,187,0) 62%),radial-gradient(50% 60% at 0% 0%,rgba(213,200,184,.3),transparent 60%);color:var(--bone);position:relative;overflow:hidden;display:flex;flex-direction:column;gap:10px}
+.hero::after{content:"";position:absolute;width:240px;height:240px;border-radius:50%;border:1px solid rgba(235,244,235,.35);right:-80px;top:-120px}
+.hero .eyebrow{color:var(--sage)}
+.hero h2{color:var(--bone);font-size:38px;font-weight:300;letter-spacing:-.03em}
+.hero p{color:rgba(227,225,220,.92);font-size:15px;position:relative}
+.dims{display:flex;flex-direction:column;gap:12px;border:1px solid var(--line);background:var(--card-2);border-radius:18px;padding:16px}
+.dims h3{margin:0;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.dim{display:grid;grid-template-columns:1fr auto;gap:4px 10px;font-size:14px;font-weight:500}
+.dim .bar{grid-column:1/-1;height:8px;background:var(--accent-soft);border-radius:4px;overflow:hidden}
+.dim .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--pc),var(--sage));border-radius:4px;transform:scaleX(0);transform-origin:left;transition:transform .9s cubic-bezier(.2,.8,.2,1)}
+.dim .bar i.go{transform:scaleX(var(--v))}
+.dim span:last-of-type{color:var(--muted);font-variant-numeric:tabular-nums}
+.sec{display:flex;flex-direction:column;gap:8px}
+.sec h3{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0;font-weight:600;display:flex;align-items:center;gap:8px}
+.sec h3::before{content:"";width:18px;height:2px;background:var(--pc);border-radius:2px}
+.sec p{font-size:16px}
+.block{background:var(--accent-soft);border-radius:16px;padding:16px}
+.block p{font-size:20px;line-height:1.3;color:var(--pc);font-weight:400;letter-spacing:-.01em}
+.note{border:1px solid var(--line);background:var(--card-2);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:10px;font-size:15px}
+.note .who{display:flex;align-items:center;gap:10px}
+.note .who .avatar{width:34px;height:34px;font-size:14px}
+.note .who b{display:block;font-size:14px}
+.note .who small{color:var(--muted);font-size:12px}
+.note .sig{font-family:var(--display);font-size:22px;font-weight:300;color:var(--pc);letter-spacing:-.02em}
+.cta a{display:flex;text-decoration:none}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="numineia" viewBox="0 0 139.5497 24.333"><g fill="currentColor"><path d="M0 23.933V0.6H3.1L15.1998 19.6747H15.2331V0.6H18.0331V23.933H14.9331L2.8333 4.8583H2.8V23.933Z"/><path d="M28.7963 24.333Q26.8713 24.333 25.4296 23.5497Q23.988 22.7663 23.2005 21.1497Q22.413 19.5331 22.413 17.0664V7.3999H25.213V16.7664Q25.213 19.3456 26.3005 20.6393Q27.3879 21.933 29.453 21.933Q30.8793 21.933 32.0127 21.233Q33.1462 20.533 33.7962 19.2054Q34.4462 17.8777 34.4462 15.9664V7.3999H37.2461V23.933H34.7295L34.5378 21.058H34.5045Q33.6962 22.5663 32.2045 23.4497Q30.7129 24.333 28.7963 24.333Z"/><path d="M41.7594 23.933V7.3999H44.276L44.4927 9.8832H44.526Q45.3344 8.4915 46.6802 7.7457Q48.026 6.9999 49.6843 6.9999Q50.9843 6.9999 52.0468 7.3582Q53.1093 7.7166 53.9134 8.4374Q54.7176 9.1582 55.2092 10.2665H55.2426Q56.1175 8.6999 57.6175 7.8499Q59.1175 6.9999 60.9258 6.9999Q62.8591 6.9999 64.3091 7.7832Q65.7591 8.5665 66.5591 10.1832Q67.359 11.7998 67.359 14.2665V23.933H64.5924V14.5665Q64.5924 11.9998 63.5591 10.6998Q62.5258 9.3999 60.5508 9.3999Q59.2258 9.3999 58.1883 10.0582Q57.1509 10.7165 56.555 11.9915Q55.9592 13.2665 55.9592 15.1665V23.933H53.1593V14.5665Q53.1593 11.9998 52.1259 10.6998Q51.0926 9.3999 49.1593 9.3999Q47.8927 9.3999 46.8427 10.0999Q45.7927 10.7998 45.176 12.1165Q44.5594 13.4331 44.5594 15.3664V23.933Z"/><path d="M71.9223 23.933V7.3999H74.7223V23.933ZM73.3223 3.8249Q72.489 3.8249 71.9348 3.2726Q71.3807 2.7202 71.3807 1.8833Q71.3807 1.0583 71.933 0.5292Q72.4854 0 73.3223 0Q74.1223 0 74.6889 0.5292Q75.2556 1.0583 75.2556 1.8875Q75.2556 2.7166 74.6889 3.2708Q74.1223 3.8249 73.3223 3.8249Z"/><path d="M79.5856 23.933V7.3999H82.1022L82.2938 10.2749H82.3272Q83.1438 8.7582 84.6188 7.8791Q86.0938 6.9999 88.0104 6.9999Q89.9604 6.9999 91.3937 7.7832Q92.827 8.5665 93.6229 10.1832Q94.4187 11.7998 94.4187 14.2665V23.933H91.6187V14.5665Q91.6187 11.9998 90.5187 10.6998Q89.4187 9.3999 87.3521 9.3999Q85.9188 9.3999 84.8021 10.0999Q83.6855 10.7998 83.0355 12.1165Q82.3855 13.4331 82.3855 15.3664V23.933Z"/><path d="M106.0985 24.333Q103.7319 24.333 101.8986 23.2497Q100.0653 22.1664 99.0153 20.2164Q97.9653 18.2664 97.9653 15.6664Q97.9653 13.0331 98.9986 11.0998Q100.0319 9.1665 101.8819 8.0832Q103.7319 6.9999 106.1652 6.9999Q108.5985 6.9999 110.3318 8.0832Q112.0651 9.1665 112.9984 10.9165Q113.9317 12.6665 113.9317 14.7331Q113.9317 15.0665 113.9317 15.4498Q113.9317 15.8331 113.8984 16.2998H100.0653V14.1331H111.1651Q111.0651 11.8665 109.6485 10.5915Q108.2318 9.3165 106.0985 9.3165Q104.6652 9.3165 103.4319 9.9499Q102.1986 10.5832 101.4486 11.8123Q100.6986 13.0415 100.6986 14.8998V15.8331Q100.6986 17.8747 101.4652 19.2414Q102.2319 20.608 103.4694 21.2914Q104.7069 21.9747 106.0985 21.9747Q107.8318 21.9747 108.9985 21.1747Q110.1651 20.3747 110.6984 18.9997H113.4651Q113.0317 20.533 112.0318 21.733Q111.0318 22.933 109.5485 23.633Q108.0652 24.333 106.0985 24.333Z"/><path d="M117.9783 23.933V7.3999H120.7783V23.933ZM119.3783 3.8249Q118.545 3.8249 117.9908 3.2726Q117.4367 2.7202 117.4367 1.8833Q117.4367 1.0583 117.9891 0.5292Q118.5414 0 119.3783 0Q120.1783 0 120.745 0.5292Q121.3116 1.0583 121.3116 1.8875Q121.3116 2.7166 120.745 3.2708Q120.1783 3.8249 119.3783 3.8249Z"/><path d="M131.1665 24.333Q129.1249 24.333 127.7665 23.633Q126.4082 22.933 125.7457 21.7664Q125.0833 20.5997 125.0833 19.2331Q125.0833 17.5331 125.9666 16.3664Q126.8499 15.1998 128.4665 14.5831Q130.0832 13.9665 132.2831 13.9665H136.7498Q136.7498 12.4082 136.2498 11.379Q135.7498 10.3499 134.8164 9.8332Q133.8831 9.3165 132.5831 9.3165Q130.9498 9.3165 129.7499 10.1374Q128.5499 10.9582 128.2832 12.5665H125.4166Q125.6166 10.7665 126.6374 9.5332Q127.6582 8.2999 129.2332 7.6499Q130.8082 6.9999 132.5831 6.9999Q134.8998 6.9999 136.4498 7.8499Q137.9997 8.6999 138.7747 10.2165Q139.5497 11.7332 139.5497 13.7665V23.933H137.0914L136.8998 20.9997H136.8664Q136.4998 21.7247 135.9581 22.3372Q135.4164 22.9497 134.7206 23.3872Q134.0248 23.8247 133.1373 24.0788Q132.2498 24.333 131.1665 24.333ZM131.6165 21.9664Q132.8331 21.9664 133.7873 21.483Q134.7414 20.9997 135.4081 20.1664Q136.0748 19.3331 136.4123 18.2956Q136.7498 17.2581 136.7498 16.1581V16.1331H132.5165Q130.8832 16.1331 129.8832 16.5164Q128.8832 16.8998 128.4499 17.5664Q128.0165 18.2331 128.0165 19.0997Q128.0165 19.9664 128.4332 20.6164Q128.8499 21.2664 129.6582 21.6164Q130.4665 21.9664 131.6165 21.9664Z"/></g></symbol></svg>
+
+<div class="stage">
+  <aside class="side">
+    <svg class="logo" viewBox="0 0 139.5497 24.333" role="img" aria-label="Numineia"><use href="#numineia"/></svg>
+    <h1 id="side-h">Maquette du parcours</h1>
+    <p id="side-p">Cliquez dans le téléphone. Le profil se calcule à partir de vos réponses.</p>
+    <div class="toolbar">
+      <button class="chip" id="lang-fr" aria-pressed="true" type="button">Français</button>
+      <button class="chip" id="lang-en" aria-pressed="false" type="button">English</button>
+      <button class="chip" id="restart" type="button">↺ <span id="restart-l">Recommencer</span></button>
+    </div>
+    <div class="steps" id="steps"></div>
+    <details class="events">
+      <summary id="ev-title">Événements de suivi</summary>
+      <ul id="ev-list"></ul>
+    </details>
+  </aside>
+
+  <div class="device">
+    <div class="notch"></div>
+    <div class="head">
+      <svg class="logo" viewBox="0 0 139.5497 24.333" role="img" aria-label="Numineia"><use href="#numineia"/></svg>
+      <small id="brand-sub">Bilan nutritionnel</small>
+    </div>
+    <div class="progress" id="progress" hidden></div>
+    <div class="viewport" id="viewport"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const CHECK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>';
+  const ARROW='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+  const LOCK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
+
+  const T = {
+    fr: {
+      sub:'Bilan nutritionnel', sideH:'Maquette du parcours', sideP:'Cliquez dans le téléphone. Le profil se calcule à partir de vos réponses.', restart:'Recommencer', events:'Événements de suivi',
+      stepNames:['Accueil','Q1 · Journées','Q2 · Où en êtes-vous','Q3 · Scénario','Pourquoi','Q4 · Énergie','Q5 · Déjà essayé','Pourquoi','Q6 · Différence','Q7 · Objectif','Analyse','Courriel','Résultat'],
+      intro:{eyebrow:'Bilan gratuit', h:"Découvrez ce qui vous empêche vraiment de bien manger.", art:"Votre profil en 2 minutes", pills:['7 questions','2 minutes','Résultat immédiat'], btn:'Faire mon bilan', trust:"Sofia Abdelkafi, diététiste-nutritionniste. 15 ans de pratique clinique à Montréal. Sans compter les calories."},
+      q:[
+        {t:"À quoi ressemblent vos journées ?", o:["Horaire de bureau, 9 à 5", "Horaires irréguliers ou de quarts", "À la maison avec la famille", "Aux études ou autre"]},
+        {t:"Pour bien manger, où en êtes-vous honnêtement en ce moment ?", o:["Je sais quoi faire, je n'arrive juste pas à le faire", "Je commence bien, puis je lâche après quelques semaines", "Je suis perdue dans les conseils contradictoires", "Ça va bien, je veux aller plus loin"]},
+        {t:"Lequel de ces scénarios revient le plus souvent ?", o:["Sauter un repas ou manger tard à cause du travail", "Décider quoi manger à la dernière minute", "Grignoter le soir", "Tout compter, tout noter, et c'est épuisant"]},
+        {t:"Comment va votre énergie pendant une journée de travail ?", o:["Chute en milieu d'après-midi", "Correct jusqu'au soir, puis tout s'écroule", "Ça dépend des jours", "Stable"]},
+        {t:"Qu'avez-vous déjà essayé ?", multi:true, o:["Des applications qui comptent les calories", "Une diète ou un plan trouvé en ligne", "Une nutritionniste ou une diététiste", "Rien de structuré pour l'instant"]},
+        {t:"Qu'est-ce qui ferait la plus grande différence pour vous ?", o:["Savoir quoi manger sans y penser chaque jour", "Rester constante au-delà du premier mois", "Comprendre mon corps au lieu de suivre des règles", "Qu'une experte valide mes choix"]},
+        {t:"Votre objectif principal pour les trois prochains mois ?", o:["Plus d'énergie", "Un poids santé qui reste", "Une meilleure digestion, plus de confort", "Une relation plus calme avec la nourriture"]}
+      ],
+      qlabel:'Question', cont:'Continuer', choose:'Choisissez une ou plusieurs réponses',
+      why:[
+        {h:"Pourquoi cette question", p:"Il n'y a pas de mauvaise réponse ici. Le but est de trouver la seule chose qui brise votre routine, pour que la méthode règle ça en premier."},
+        {h:"Pourquoi cette question", p:"Ce que vous avez essayé nous dit ce qui ne convenait pas à votre vie. Pas ce qui cloche chez vous."}
+      ],
+      loading:{h:"On lit vos réponses", checks:['Votre horaire','Votre énergie','Vos habitudes','Votre objectif']},
+      proof:["Plus de 60 femmes ont suivi la première version du programme.", "Construit à partir de 15 ans de consultations à Montréal.", "Aucun calcul quotidien. La précision se règle une fois."],
+      gate:{eyebrow:'Presque là', h:"Votre bilan est prêt.", p:"Dites-nous où l'envoyer. Vous le verrez à l'écran tout de suite, et vous recevrez aussi les trois premiers ajustements de Sofia pour votre profil.", fn:'Prénom', em:'Courriel', btn:'Voir mon profil', fine:"Pas de pourriel. Désabonnement en un clic."},
+      result:{eyebrow:'Votre profil', dims:'Votre bilan en quatre points', dimNames:['Structure','Constance','Clarté','Légèreté'], means:'Ce que ça veut dire', block:'Ce qui vous freine', change:'Ce qui change avec la méthode', cta:'Voir le programme', back:'Refaire le bilan', who:'Sofia Abdelkafi', role:'Diététiste-nutritionniste', sig:'Sofia'},
+      profiles:{
+        O:{name:"La Surchargée", line:"Vous en savez déjà beaucoup. Ce qui manque, ce n'est pas l'information, c'est une structure qui tient quand la semaine déborde.",
+           means:["Vous n'avez pas un problème de volonté.", "Vous avez un problème de charge mentale : chaque repas redevient une décision, et les décisions s'épuisent avant le souper."],
+           block:"Décider quoi manger, chaque jour, à partir de zéro.",
+           change:"La précision se règle une seule fois, dans vos repas de base. Ensuite, il n'y a plus rien à calculer au quotidien. Vous mangez, vous ne gérez pas."},
+        I:{name:"L'Intermittente", line:"Vous savez démarrer. Autour de la troisième semaine, la vie reprend le dessus et tout s'arrête en même temps.",
+           means:["Chaque redémarrage vous a coûté de l'énergie et un peu de confiance.", "Ce n'est pas un manque de discipline : les plans que vous avez suivis n'avaient pas de suite prévue pour le moment où ça se complique."],
+           block:"Un plan qui demande le même effort la semaine 6 que la semaine 1.",
+           change:"La méthode avance en neuf phases, et il y a toujours une étape suivante qui vous attend. Quand vous décrochez, vous reprenez à la phase où vous étiez, pas à zéro. Les échanges optionnels avec Sofia servent exactement à ça."},
+        D:{name:"La Désorientée", line:"Vous avez lu, écouté, essayé. Chaque source dit le contraire de la précédente, et vous ne savez plus à qui faire confiance.",
+           means:["Le problème n'est pas que vous ne comprenez pas.", "C'est que vous suivez des règles faites pour d'autres personnes, dans d'autres vies que la vôtre."],
+           block:"Trop d'avis, aucun qui parte de votre réalité.",
+           change:"Une seule méthode, bâtie par une diététiste après 15 ans de consultations, ajustée à vos repas, votre horaire et votre corps. Vous arrêtez de chercher la bonne règle. Vous apprenez la vôtre."},
+        C:{name:"La Calculatrice", line:"Vous pesez, vous notez, vous comptez. Ça fonctionne tant que vous le faites, et ça vous épuise.",
+           means:["Compter chaque jour n'est pas de la rigueur, c'est une dépendance au calcul.", "Le jour où vous arrêtez, tout repart, parce que rien n'a été intégré."],
+           block:"Une précision qui exige votre attention à chaque repas.",
+           change:"Le calcul se fait une fois, au départ, dans vos repas de base. Après, c'est terminé. La précision est dans vos habitudes, pas dans une application."}
+      },
+      days:["Votre journée tourne autour du bureau, et les repas passent après tout le reste.", "Vos horaires changent, donc aucune routine « normale » ne tient.", "Vous nourrissez tout le monde avant vous.", "Votre semaine n'a pas encore de cadre fixe."],
+      energy:["Le creux d'après-midi vous rattrape presque chaque jour.", "Vous tenez jusqu'au soir, puis tout lâche d'un coup.", "Certains jours ça va, d'autres non, sans que vous sachiez pourquoi.", "Votre énergie est stable, et on va la garder."],
+      goal:["Avec « plus d'énergie » comme objectif, c'est la première chose qu'on règle.", "Un poids santé qui reste vient de repas stables, pas de restrictions.", "Le confort digestif se construit repas par repas, et c'est par là qu'on commence.", "Une relation plus calme avec la nourriture commence quand il n'y a plus rien à calculer."],
+      note:"Je lis ces profils tous les jours en consultation. Le vôtre n'est pas un diagnostic, c'est un point de départ. Si vous reconnaissez votre quotidien dans ces lignes, le programme a été construit pour vous."
+    },
+    en: {
+      sub:'Nutrition assessment', sideH:'Flow mockup', sideP:'Click through the phone. The profile is computed from your answers.', restart:'Restart', events:'Tracking events',
+      stepNames:['Intro','Q1 · Days','Q2 · Where you are','Q3 · Scenario','Why','Q4 · Energy','Q5 · Tried','Why','Q6 · Difference','Q7 · Goal','Analysis','Email','Result'],
+      intro:{eyebrow:'Free assessment', h:"Find out what's really getting in the way of eating well.", art:"Your profile in 2 minutes", pills:['7 questions','2 minutes','Instant result'], btn:'Start my assessment', trust:"Sofia Abdelkafi, dietitian-nutritionist. 15 years of clinical practice in Montreal. No calorie counting."},
+      q:[
+        {t:"What do your days look like?", o:["Office hours, 9 to 5", "Irregular or shift hours", "At home with the family", "Studying or something else"]},
+        {t:"When it comes to eating well, where are you honestly right now?", o:["I know what to do, I just don't manage to do it", "I start well, then drop off after a few weeks", "I'm lost in contradictory advice", "I'm doing fine, I want to go further"]},
+        {t:"Which of these happens most often?", o:["Skipping a meal or eating late because of work", "Deciding what to eat at the last minute", "Evening snacking", "Counting and tracking everything, and it's exhausting"]},
+        {t:"How's your energy across a workday?", o:["Crash mid-afternoon", "Fine until evening, then it falls apart", "Depends on the day", "Stable"]},
+        {t:"What have you already tried?", multi:true, o:["Calorie-counting apps", "A diet or plan found online", "A nutritionist or dietitian", "Nothing structured yet"]},
+        {t:"What would make the biggest difference for you?", o:["Knowing what to eat without thinking about it daily", "Staying consistent past the first month", "Understanding my body instead of following rules", "Having an expert check my choices"]},
+        {t:"Your main goal for the next three months?", o:["More energy", "A healthy weight that stays", "Better digestion and comfort", "A calmer relationship with food"]}
+      ],
+      qlabel:'Question', cont:'Continue', choose:'Pick one or more',
+      why:[
+        {h:"Why we ask", p:"There's no bad answer here. The point is to find the one thing that breaks your routine, so the method fixes that first."},
+        {h:"Why we ask", p:"What you've tried tells us what didn't fit your life. Not what's wrong with you."}
+      ],
+      loading:{h:"Reading your answers", checks:['Your schedule','Your energy','Your habits','Your goal']},
+      proof:["Over 60 women followed the first version of the programme.", "Built from 15 years of consultations in Montreal.", "No daily calculating. Precision is set once."],
+      gate:{eyebrow:'Almost there', h:"Your assessment is ready.", p:"Tell us where to send it. You'll see it on screen right away, and you'll also get Sofia's first three adjustments for your profile.", fn:'First name', em:'Email', btn:'See my profile', fine:"No spam. One-click unsubscribe."},
+      result:{eyebrow:'Your profile', dims:'Your assessment in four points', dimNames:['Structure','Consistency','Clarity','Lightness'], means:'What this means', block:"What's holding you back", change:'What changes with the method', cta:'See the programme', back:'Retake the assessment', who:'Sofia Abdelkafi', role:'Dietitian-nutritionist', sig:'Sofia'},
+      profiles:{
+        O:{name:"The Overloaded", line:"You already know a lot. What's missing isn't information, it's a structure that holds when the week overflows.",
+           means:["You don't have a willpower problem.", "You have a mental-load problem: every meal becomes a decision again, and decisions run out before dinner."],
+           block:"Deciding what to eat, every day, from scratch.",
+           change:"Precision is set once, into your core meals. After that there's nothing to calculate day to day. You eat, you don't manage."},
+        I:{name:"The Restarter", line:"You know how to start. Around week three, life takes over and everything stops at once.",
+           means:["Every restart has cost you energy and a bit of confidence.", "It isn't a lack of discipline: the plans you followed had no next step built in for when things get complicated."],
+           block:"A plan that asks the same effort in week 6 as in week 1.",
+           change:"The method moves in nine phases, and there's always a next step waiting. When you slip, you pick up at the phase you were on, not at zero. The optional exchanges with Sofia exist for exactly that."},
+        D:{name:"The Lost", line:"You've read, listened, tried. Every source contradicts the last, and you no longer know who to trust.",
+           means:["The problem isn't that you don't understand.", "It's that you're following rules made for other people, in other lives than yours."],
+           block:"Too many opinions, none starting from your reality.",
+           change:"One method, built by a dietitian after 15 years of consultations, adjusted to your meals, your schedule and your body. You stop looking for the right rule. You learn yours."},
+        C:{name:"The Calculator", line:"You weigh, you log, you count. It works as long as you keep doing it, and it's wearing you out.",
+           means:["Counting every day isn't rigour, it's a dependence on the calculation.", "The day you stop, everything comes back, because nothing was ever built into habit."],
+           block:"Precision that demands your attention at every meal.",
+           change:"The calculation happens once, at the start, in your core meals. Then it's done. The precision lives in your habits, not in an app."}
+      },
+      days:["Your day revolves around the office, and meals come after everything else.", "Your hours change, so no 'normal' routine holds.", "You feed everyone before yourself.", "Your week doesn't have a fixed frame yet."],
+      energy:["The afternoon slump catches you almost every day.", "You hold until evening, then it all lets go at once.", "Some days are fine, some aren't, and you can't tell why.", "Your energy is stable, and we'll keep it that way."],
+      goal:["With 'more energy' as the goal, that's the first thing we fix.", "A healthy weight that stays comes from stable meals, not restriction.", "Digestive comfort is built meal by meal, and that's where we start.", "A calmer relationship with food starts when there's nothing left to calculate."],
+      note:"I see these profiles every day in consultation. Yours isn't a diagnosis, it's a starting point. If you recognise your daily life in these lines, the programme was built for you."
+    }
+  };
+
+  const LANDING='https://portal.sheismynutritionist.com/nutriverse-systeme';
+  const FLOW=['intro','q0','q1','q2','why0','q3','q4','why1','q5','q6','loading','gate','result'];
+  let lang='fr', step=0, answers={}, lead={}, timers=[];
+  const $=s=>document.querySelector(s);
+  const viewport=$('#viewport'), progress=$('#progress'), evList=$('#ev-list'), stepsEl=$('#steps');
+
+  function track(name,data){ const li=document.createElement('li'); li.textContent=name+(data?' '+JSON.stringify(data):''); evList.appendChild(li); try{console.log('[track]',name,data||'')}catch(e){} }
+  function el(tag,cls,html){ const e=document.createElement(tag); if(cls) e.className=cls; if(html!=null) e.textContent=html; return e; }
+  function svg(s){ const d=document.createElement('span'); d.innerHTML=s; return d.firstChild; }
+
+  function profile(){
+    const q2=answers.q1, q3=answers.q2, q6=answers.q5;
+    let p=['O','I','D','O'][q2??0];
+    if(q2===3) p=['O','I','D','O'][q6??0];
+    if(q3===3) p='C';
+    return p;
+  }
+  function dims(){
+    // four scores 0-100, lower = more friction. deterministic from answers.
+    const q2=answers.q1??0,q3=answers.q2??0,q4=answers.q3??0,q5=answers.q4||[],q6=answers.q5??0;
+    let structure=70, constancy=70, clarity=70, light=70;
+    if(q3===0||q3===1) structure-=30; if(q2===0) structure-=15; if(q6===0) structure-=10;
+    if(q2===1) constancy-=35; if(q6===1) constancy-=15; if(q4===1) constancy-=5;
+    if(q2===2) clarity-=35; if(q5.includes(1)) clarity-=15; if(q6===2) clarity-=10;
+    if(q3===3) light-=35; if(q5.includes(0)) light-=20; if(q4===0) light-=5;
+    return [structure,constancy,clarity,light].map(v=>Math.max(18,Math.min(92,v)));
+  }
+
+  function renderSteps(){
+    stepsEl.innerHTML='';
+    T[lang].stepNames.forEach((n,i)=>{
+      const b=el('button','jump'+(i<step?' done':''),null); b.type='button';
+      b.append(el('i'), el('span',null,n));
+      if(i===step) b.setAttribute('aria-current','step');
+      b.onclick=()=>{ if(i<=step) go(i,true); };
+      stepsEl.append(b);
+    });
+  }
+
+  function setLang(l){
+    lang=l; $('#lang-fr').setAttribute('aria-pressed',l==='fr'); $('#lang-en').setAttribute('aria-pressed',l==='en');
+    const t=T[l]; $('#brand-sub').textContent=t.sub; $('#ev-title').textContent=t.events; $('#side-h').textContent=t.sideH; $('#side-p').textContent=t.sideP; $('#restart-l').textContent=t.restart;
+    render(true);
+  }
+
+  function render(instant){
+    timers.forEach(clearTimeout); timers=[];
+    const t=T[lang], key=FLOW[step];
+    const old=viewport.querySelector('.screen');
+    if(old){ if(instant) old.remove(); else { old.classList.add('leaving'); setTimeout(()=>old.remove(),280); } }
+    const screen=el('div','screen'); viewport.append(screen);
+    renderSteps();
+
+    const qIndex=key.startsWith('q')?Number(key.slice(1)):null;
+    progress.hidden=!(qIndex!==null||key.startsWith('why'));
+    progress.innerHTML='';
+    if(!progress.hidden){
+      const cur=qIndex!==null?qIndex:(key==='why0'?3:5);
+      for(let i=0;i<7;i++){ const s=el('i'); if(i<cur) s.classList.add('done'); else if(i===cur&&qIndex!==null) s.classList.add('cur'); progress.append(s); }
+    }
+
+    if(key==='intro'){
+      const art=el('div','art'); art.append(el('span'),el('span'),el('span'),el('b',null,t.intro.art)); screen.append(art);
+      screen.append(el('div','eyebrow',t.intro.eyebrow));
+      screen.append(el('h2','big',t.intro.h));
+      const pills=el('div','pills'); t.intro.pills.forEach(p=>pills.append(el('span','pill',p))); screen.append(pills);
+      screen.append(el('div','spacer'));
+      const b=el('button','btn',t.intro.btn); b.type='button'; b.append(svg(ARROW)); b.onclick=()=>{track('quiz_start');go(1)}; screen.append(b);
+      const tr=el('div','trust'); tr.append(el('div','avatar','S'), el('span',null,t.intro.trust)); screen.append(tr);
+    }
+
+    else if(qIndex!==null){
+      const q=t.q[qIndex];
+      screen.append(el('div','eyebrow',t.qlabel+' '+(qIndex+1)+' / 7'));
+      screen.append(el('h2',null,q.t));
+      if(q.multi) screen.append(el('p','fine',t.choose));
+      const opts=el('div','opts'); let next;
+      const sel=q.multi?new Set(answers['q'+qIndex]||[]):null;
+      q.o.forEach((o,i)=>{
+        const b=el('button','opt'); b.type='button'; b.style.setProperty('--i',i);
+        const k=el('span','k'); k.append(svg(CHECK)); b.append(k, el('span',null,o));
+        if(q.multi){
+          b.setAttribute('aria-pressed',sel.has(i));
+          b.onclick=()=>{ sel.has(i)?sel.delete(i):sel.add(i); b.setAttribute('aria-pressed',sel.has(i)); answers['q'+qIndex]=[...sel]; next.disabled=sel.size===0; };
+        } else {
+          b.setAttribute('aria-pressed',answers['q'+qIndex]===i);
+          b.onclick=()=>{ answers['q'+qIndex]=i; track('question_answered',{q:qIndex+1,a:i}); opts.querySelectorAll('.opt').forEach(x=>x.setAttribute('aria-pressed',false)); b.setAttribute('aria-pressed',true); timers.push(setTimeout(()=>go(step+1),260)); };
+        }
+        opts.append(b);
+      });
+      screen.append(opts);
+      if(q.multi){
+        screen.append(el('div','spacer'));
+        next=el('button','btn',t.cont); next.type='button'; next.append(svg(ARROW)); next.disabled=sel.size===0;
+        next.onclick=()=>{ track('question_answered',{q:qIndex+1,a:[...sel]}); go(step+1); };
+        screen.append(next);
+      }
+    }
+
+    else if(key.startsWith('why')){
+      const w=t.why[Number(key.slice(3))];
+      const box=el('div','why'); box.append(el('b',null,w.h), el('p',null,w.p));
+      screen.append(el('div','spacer'),box,el('div','spacer'));
+      const b=el('button','btn ghost',t.cont); b.type='button'; b.append(svg(ARROW)); b.onclick=()=>go(step+1); screen.append(b);
+    }
+
+    else if(key==='loading'){
+      const l=el('div','loader'); l.append(el('div','orb'));
+      const h=el('h2',null,t.loading.h); h.style.textAlign='center'; l.append(h);
+      const ch=el('div','checks'); const items=t.loading.checks.map(c=>{ const d=el('div','check'); const i=el('i'); i.append(svg(CHECK)); d.append(i, el('span',null,c)); ch.append(d); return d; }); l.append(ch);
+      const pr=el('p','proof',t.proof[0]); l.append(pr); screen.append(l);
+      items.forEach((d,i)=>timers.push(setTimeout(()=>d.classList.add('on'),500+i*650)));
+      let i=0; const iv=setInterval(()=>{ i=(i+1)%t.proof.length; pr.textContent=t.proof[i]; },1300);
+      timers.push(setTimeout(()=>{ clearInterval(iv); if(FLOW[step]==='loading') go(step+1); },3600));
+      timers.push(iv);
+    }
+
+    else if(key==='gate'){
+      screen.append(el('div','eyebrow',t.gate.eyebrow));
+      screen.append(el('h2','big',t.gate.h));
+      screen.append(el('p','muted',t.gate.p));
+      const f=document.createElement('form'); f.className='opts';
+      const f1=el('div','field'); const l1=el('label',null,t.gate.fn); l1.htmlFor='fname'; const i1=document.createElement('input'); i1.id='fname'; i1.required=true; i1.autocomplete='given-name'; i1.value=lead.fname||''; f1.append(l1,i1);
+      const f2=el('div','field'); const l2=el('label',null,t.gate.em); l2.htmlFor='email'; const i2=document.createElement('input'); i2.id='email'; i2.type='email'; i2.required=true; i2.autocomplete='email'; i2.value=lead.email||''; f2.append(l2,i2);
+      const b=el('button','btn',t.gate.btn); b.type='submit'; b.append(svg(ARROW));
+      const lk=el('div','lock'); lk.append(svg(LOCK), el('span',null,t.gate.fine));
+      f.append(f1,f2,b,lk);
+      f.onsubmit=e=>{ e.preventDefault(); if(!f.checkValidity()){f.reportValidity();return;} lead={fname:i1.value.trim(),email:i2.value.trim()}; track('lead_submitted',{profile:profile()}); go(step+1); };
+      screen.append(f);
+    }
+
+    else if(key==='result'){
+      const p=profile(), P=t.profiles[p], r=t.result;
+      track('result_viewed',{profile:p});
+      const wrap=el('div','result'); wrap.style.setProperty('--pc','var(--p-'+p+')');
+      let n=0;
+      const hero=el('div','hero'); hero.style.setProperty('--i',n++);
+      hero.append(el('div','eyebrow',r.eyebrow+(lead.fname?' · '+lead.fname:'')), el('h2',null,P.name), el('p',null,P.line)); wrap.append(hero);
+
+      const dm=el('div','dims'); dm.style.setProperty('--i',n++); dm.append(el('h3',null,r.dims));
+      const vals=dims(); const bars=[];
+      r.dimNames.forEach((name,i)=>{ const d=el('div','dim'); const bar=el('div','bar'); const fill=el('i'); fill.style.setProperty('--v',vals[i]/100); bar.append(fill); d.append(el('span',null,name), el('span',null,vals[i]+' / 100'), bar); dm.append(d); bars.push(fill); });
+      wrap.append(dm);
+
+      const s1=el('div','sec'); s1.style.setProperty('--i',n++); s1.append(el('h3',null,r.means), el('p',null,[t.days[answers.q0??0],t.energy[answers.q3??0],...P.means].join(' '))); wrap.append(s1);
+      const s2=el('div','sec block'); s2.style.setProperty('--i',n++); s2.append(el('h3',null,r.block), el('p',null,P.block)); wrap.append(s2);
+      const s3=el('div','sec'); s3.style.setProperty('--i',n++); s3.append(el('h3',null,r.change), el('p',null,P.change+' '+t.goal[answers.q6??0])); wrap.append(s3);
+      const cta=el('div','cta'); cta.style.setProperty('--i',n++); const a=el('a','btn',r.cta); a.href=LANDING; a.target='_blank'; a.rel='noopener'; a.append(svg(ARROW)); a.onclick=()=>track('cta_click',{profile:p}); cta.append(a); wrap.append(cta);
+      const note=el('div','note'); note.style.setProperty('--i',n++); const who=el('div','who'); const wt=el('div'); wt.append(el('b',null,r.who), el('small',null,r.role)); who.append(el('div','avatar','S'),wt); note.append(who, el('p',null,t.note), el('span','sig',r.sig)); wrap.append(note);
+      const back=el('button','btn ghost',r.back); back.type='button'; back.style.setProperty('--i',n++); back.onclick=restart; wrap.append(back);
+      screen.append(wrap);
+      timers.push(setTimeout(()=>bars.forEach(b=>b.classList.add('go')),350));
+    }
+  }
+
+  function go(n,instant){ step=n; render(instant); }
+  function restart(){ step=0; answers={}; lead={}; evList.innerHTML=''; render(true); }
+  $('#lang-fr').onclick=()=>setLang('fr'); $('#lang-en').onclick=()=>setLang('en'); $('#restart').onclick=restart;
+  render(true);
+})();
+</script>
+
+</body>
+</html>
